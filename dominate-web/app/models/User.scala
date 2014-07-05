@@ -3,10 +3,9 @@ package models
 import play.api.db.slick.Config.driver.simple._
 import java.sql.Date
 
-case class User(id: Long, firstname: String, lastname: String, username: String, password: String, dateCreated: Date, dateModified: Option[Date])
+case class User(id: Long, firstname: String, lastname: String, username: String, password: String, dateCreated: Date,
+                dateModified: Option[Date])
 
-/* Table mapping
- */
 class UsersTable(tag: Tag) extends Table[User](tag, "USER") {
 
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
