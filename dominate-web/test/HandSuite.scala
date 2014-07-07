@@ -8,11 +8,10 @@ class HandSuite extends FunSuite {
   test("I should be able to play a tile and it should automatically be placed on the right side") {
     val newHand = hand.playTile(Tile(5,0))
     val expectedHand = Hand(Tile(5,0) :: hand.chain)
-    println(newHand)
     assert(newHand == expectedHand)
+
     val newHand2 = hand.playTile(Tile(2,1))
     val expectedHand2 = Hand(hand.chain :+ Tile(1,2))
-    println(newHand2)
     assert(newHand2 == expectedHand2)
   }
 
