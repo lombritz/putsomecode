@@ -1,5 +1,4 @@
-import game.engine.Hand
-import models.Tile
+import game.engine.{Tile, Hand}
 import org.scalatest.FunSuite
 
 class HandSuite extends FunSuite {

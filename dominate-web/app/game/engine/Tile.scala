@@ -1,4 +1,4 @@
-package models
+package game.engine
 
 /**
  * Created by jaime on 6/26/14.

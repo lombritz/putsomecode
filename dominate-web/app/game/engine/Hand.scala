@@ -1,6 +1,5 @@
 package game.engine
 
-import models.Tile
 import scala.annotation.tailrec
 
 /** A hand represents a domino match, using double six domino set.
