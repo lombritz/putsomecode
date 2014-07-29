@@ -14,14 +14,13 @@ import java.sql.Date
 
 object UserController extends Controller {
 
-  //create an instance of the table
-  val users = TableQuery[UsersTable] //see a way to architect your app in the computers-database-slick sample  
+  val userService = new UserService(new SlickUserRepository)
 
   //JSON read/write macro
-  implicit val catFormat = Json.format[User]
+  implicit val userFormat = Json.format[User]
 
   def index = DBAction { implicit req =>
-    Ok(views.html.users(users.list))
+    Ok(views.html.users(userService.list().items))
   }
 
   val userForm = Form(
@@ -38,19 +37,19 @@ object UserController extends Controller {
 
   def insert = DBAction { implicit req =>
     val user = userForm.bindFromRequest.get
-    users.insert(user)
+    userService.save(user)
     
     Redirect(routes.UserController.index)
   }
 
   def jsonFindAll = DBAction { implicit req =>
-    Ok(toJson(users.list))
+    Ok(toJson(userService.list().items))
   }
 
   def jsonInsert = DBAction(parse.json) { implicit req =>
-    req.request.body.validate[User].map { cat =>
-        users.insert(cat)
-        Ok(toJson(cat))
+    req.request.body.validate[User].map { user =>
+        userService.save(user)
+        Ok(toJson(user))
     }.getOrElse(BadRequest("invalid json"))    
   }
 
