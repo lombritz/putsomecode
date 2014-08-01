@@ -20,7 +20,14 @@ object UserController extends Controller {
   implicit val userFormat = Json.format[User]
 
   def index = DBAction { implicit req =>
-    Ok(views.html.users(userService.list().items))
+    Ok(views.html.users(userService.list().items,
+      List(
+        Link("Home","#","", true),
+        Link("Start game","#","",false),
+        Link("Register", "#","",false),
+        Link("Sign in", "#","",false)
+      )
+    ))
   }
 
   val userForm = Form(

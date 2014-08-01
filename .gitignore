@@ -1,6 +1,12 @@
 *.class
 *.log
 
+# IntelliJ specific
+/bin
+.idea
+.idea_modules
+.history
+
 # sbt specific
 .cache/
 .history/
@@ -19,4 +25,4 @@ project/plugins/project/
 .classpath
 .project
 .settings
-
+.DS_Store
