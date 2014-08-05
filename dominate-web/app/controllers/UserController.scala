@@ -2,7 +2,6 @@ package controllers
 
 import models._
 import play.api.db.slick._
-import play.api.db.slick.Config.driver.simple._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
@@ -20,7 +19,7 @@ object UserController extends Controller {
   implicit val userFormat = Json.format[User]
 
   def index = DBAction { implicit req =>
-    Ok(views.html.users(userService.list().items,
+    Ok(views.html.users(userService.page().items,
       List(
         Link("Home","#","", true),
         Link("Start game","#","",false),
@@ -35,7 +34,7 @@ object UserController extends Controller {
       "id" -> default(longNumber, 0L),
       "firstname" -> text,
       "lastname" -> text,
-      "username" -> text,
+      "email" -> text,
       "password" -> text,
       "dateCreated" -> default(sqlDate, new Date(Calendar.getInstance().getTimeInMillis())),
       "dateModified" -> default(optional(sqlDate), None)
@@ -46,11 +45,11 @@ object UserController extends Controller {
     val user = userForm.bindFromRequest.get
     userService.save(user)
     
-    Redirect(routes.UserController.index)
+    Redirect(routes.Application.index)
   }
 
   def jsonFindAll = DBAction { implicit req =>
-    Ok(toJson(userService.list().items))
+    Ok(toJson(userService.page().items))
   }
 
   def jsonInsert = DBAction(parse.json) { implicit req =>

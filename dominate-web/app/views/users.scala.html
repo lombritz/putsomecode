@@ -16,7 +16,7 @@
                     <form action="/users/insert" method="POST">
                         <input name="firstname" type="text" placeholder="First name"/>
                         <input name="lastname" type="text" placeholder="Last name"/>
-                        <input name="username" type="text" placeholder="User name"/>
+                        <input name="email" type="text" placeholder="Email"/>
                         <input name="password" type="password"/>
                         <input type="submit"/>
                     </form>
@@ -34,7 +34,7 @@
                                 <td>@u.id</td>
                                 <td>@u.firstname</td>
                                 <td>@u.lastname</td>
-                                <td>@u.username</td>
+                                <td>@u.email</td>
                                 <td>@u.dateCreated</td>
                             </tr>
                         }
@@ -43,10 +43,4 @@
             </div>
         </div>
     </div>
-} {
-    <style type="text/css">
-        #page-container {
-            text-align: center;
-        }
-    </style>
 }

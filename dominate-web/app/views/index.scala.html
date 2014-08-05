@@ -1,13 +1,5 @@
 @(users: List[User], menuItems: List[Link])
 
 @main("index") {
-    @views.html.topMenu(menuItems, 0)
-
-} {
-    <style type="text/css">
-        /* insert CSS here. */
-        body {
-
-        }
-    </style>
+    @views.html.topMenu(menuItems)
 }

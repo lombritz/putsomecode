@@ -1,0 +1,12 @@
+@(form: Form[(String,String)])(implicit flash: Flash)
+
+@main("Login Page") {
+    <span>
+        @flash.get("errorMsg")
+    </span>
+    @helper.form(action = routes.Auth.authenticate) {
+        @helper.inputText(form("email"))
+        @helper.inputPassword(form("password"))
+        <input type="submit" value="Login">
+    }
+}

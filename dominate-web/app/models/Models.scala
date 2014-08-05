@@ -14,27 +14,27 @@ case class Page[A](items: List[A], page: Int, offset: Long, total: Long) {
   * - Table Mapping
   * - Service
   */
-case class User(id: Long, firstname: String, lastname: String, username: String, password: String,
+case class User(id: Long, firstname: String, lastname: String, email: String, password: String,
                 dateCreated: Date, dateModified: Option[Date])
 
 class UsersTable(tag: Tag) extends Table[User](tag, "USER") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def firstname = column[String]("firstname", O.NotNull)
   def lastname = column[String]("lastname", O.NotNull)
-  def username = column[String]("username", O.NotNull)
+  def email = column[String]("email", O.NotNull)
   def password = column[String]("password", O.NotNull)
   def dateCreated = column[Date]("date_created", O.NotNull)
   def dateModified = column[Option[Date]]("date_modified", O.Nullable)
 
-  def * = (id, firstname, lastname, username, password, dateCreated, dateModified) <> (User.tupled, User.unapply _)
+  def * = (id, firstname, lastname, email, password, dateCreated, dateModified) <> (User.tupled, User.unapply _)
 }
 
 trait UserRepository {
   def findById(id: Long): Option[User]
-  def findByUsername(username: String): Option[User]
+  def findByEmail(email: String): Option[User]
   def save(user: User)
   def update(user: User)
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User]
+  def page(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User]
 }
 
 class SlickUserRepository extends UserRepository {
@@ -48,10 +48,10 @@ class SlickUserRepository extends UserRepository {
         users.filter(_.id === id).firstOption
     }
 
-  def findByUsername(username: String): Option[User] =
+  def findByEmail(email: String): Option[User] =
     DB.withSession {
       implicit session =>
-        users.filter(_.username.toLowerCase like username.toLowerCase).firstOption
+        users.filter(_.email.toLowerCase like email.toLowerCase).firstOption
     }
 
   def count: Int =
@@ -66,7 +66,7 @@ class SlickUserRepository extends UserRepository {
         Query(users.filter(_.firstname.toLowerCase like filter.toLowerCase).length).first
     }
 
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User] = {
+  def page(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User] = {
     DB.withSession {
       implicit session =>
         val offset = pageSize * page
@@ -96,8 +96,8 @@ class SlickUserRepository extends UserRepository {
 }
 
 class UserService(userRepository: UserRepository) {
-  def findByUsername(username: String): Option[User] =
-    userRepository.findByUsername(username)
+  def findByEmail(email: String): Option[User] =
+    userRepository.findByEmail(email)
 
   def save(user: User) =
     userRepository.save(user)
@@ -105,8 +105,8 @@ class UserService(userRepository: UserRepository) {
   def update(user: User) =
     userRepository.update(user)
 
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User] =
-    userRepository.list(page, pageSize, orderBy, filter)
+  def page(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User] =
+    userRepository.page(page, pageSize, orderBy, filter)
 }
 
 /** Player type definitions.

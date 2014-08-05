@@ -3,16 +3,25 @@
 # ~~~~
 
 # Index route TODO: refactor this route
-GET		/							controllers.UserController.index
+GET         /                         controllers.Application.index
 
-# Insert user
-POST	/users/insert				controllers.UserController.insert
+# User CRUD routes
+GET         /users/index              controllers.UserController.index
 
-# Get all users as json
-GET		/users/json/all				controllers.UserController.jsonFindAll 
+POST        /users/insert             controllers.UserController.insert
 
-# Insert user from json
-POST	/users/json/insert			controllers.UserController.jsonInsert
+GET         /users/json/all           controllers.UserController.jsonFindAll
+
+POST        /users/json/insert        controllers.UserController.jsonInsert
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET         /assets/*file             controllers.Assets.at(path="/public", file)
+
+# Security routes
+GET         /login                    controllers.Auth.login
+
+GET         /logout                   controllers.Auth.logout
+
+POST        /auth/authenticate        controllers.Auth.authenticate
+
+GET         /signup                   controllers.Application.singUp
