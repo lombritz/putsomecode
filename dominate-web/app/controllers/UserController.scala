@@ -11,7 +11,7 @@ import play.api.libs.json.Json._
 import java.util.Calendar
 import java.sql.Date
 
-object UserController extends Controller {
+object UserController extends Controller with MessageHolder {
 
   val userService = new UserService(new SlickUserRepository)
 

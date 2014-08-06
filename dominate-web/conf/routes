@@ -24,4 +24,6 @@ GET         /logout                   controllers.Auth.logout
 
 POST        /auth/authenticate        controllers.Auth.authenticate
 
-GET         /signup                   controllers.Application.singUp
+GET         /user/signup              controllers.Auth.register
+
+POST        /user/signup              controllers.Auth.signUp

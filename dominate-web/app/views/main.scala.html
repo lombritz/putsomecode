@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit message: Option[Msg])
 
 <!DOCTYPE html>
 
@@ -15,6 +15,13 @@
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
     </head>
     <body>
+        @{message match {
+            case Some(msg) => msg match {
+                case ErrorMsg(detail) => <span class="alert alert-danger">detail</span>
+                case InfoMsg(detail) => <span class="alert alert-success">detail</span>
+            }
+            case None =>
+        }}
         @content
     </body>
 </html>

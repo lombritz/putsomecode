@@ -27,12 +27,14 @@ class UsersTable(tag: Tag) extends Table[User](tag, "USER") {
   def dateModified = column[Option[Date]]("date_modified", O.Nullable)
 
   def * = (id, firstname, lastname, email, password, dateCreated, dateModified) <> (User.tupled, User.unapply _)
+
+  def emailIndex = index("idx_email", email, unique = true)
 }
 
 trait UserRepository {
   def findById(id: Long): Option[User]
   def findByEmail(email: String): Option[User]
-  def save(user: User)
+  def save(user: User): User
   def update(user: User)
   def page(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "%"): Page[User]
 }
@@ -81,11 +83,10 @@ class SlickUserRepository extends UserRepository {
     }
   }
 
-  def save(user: User) =
-    DB.withSession {
-      implicit session =>
-        users.insert(user)
-    }
+  def save(user: User) = DB.withSession { implicit session =>
+    users.insert(user)
+    user
+  }
 
   def update(user: User) =
     DB.withSession {
@@ -99,7 +100,7 @@ class UserService(userRepository: UserRepository) {
   def findByEmail(email: String): Option[User] =
     userRepository.findByEmail(email)
 
-  def save(user: User) =
+  def save(user: User): User =
     userRepository.save(user)
 
   def update(user: User) =

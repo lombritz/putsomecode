@@ -1,13 +1,11 @@
 package controllers
 
-import controllers.UserController._
 import models._
-import play.api.db.slick.DBAction
 import play.api.mvc._
 
-object Application extends Controller with Secured {
+object Application extends Controller with Secured with MessageHolder {
 
-  def index = Action { implicit request =>
+  def index = withUser { user => implicit req =>
     Ok(views.html.index(userService.page().items,
       List(
         Link("Home","#","", true),
@@ -18,16 +16,11 @@ object Application extends Controller with Secured {
     ))
   }
 
-  /** Security API */
-  def singUp = DBAction { implicit request =>
-    val user = userForm.bindFromRequest.get
-    userService.save(user)
-
-    Redirect(routes.Application.index)
+  def startGame = withUser { user => implicit req =>
+    Ok("Hello " + user)
   }
+}
 
-  /** Game API */
-  def startGame = withUser { email => implicit request =>
-    Ok("Hello " + email)
-  }
+trait MessageHolder {
+  implicit def message: Option[Msg] = None
 }

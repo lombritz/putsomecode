@@ -44,6 +44,7 @@ case class Hand(chain: List[Tile]) {
     * */
   private def validateChain = {
     @tailrec def _validateChain(c: List[Tile]): Boolean = c match {
+      case Nil => true
       case x :: Nil => true
       case x :: y :: ys => if (x.right == y.left) _validateChain(y :: ys) else false
     }
