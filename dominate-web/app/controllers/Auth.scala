@@ -11,7 +11,7 @@ import java.sql.Date
 import java.util.Calendar
 import scala.util.{Success, Try}
 
-object Auth extends Controller with MessageHolder {
+object Auth extends Controller {
 
   val userService = new UserService(new SlickUserRepository)
 
@@ -37,7 +37,7 @@ object Auth extends Controller with MessageHolder {
   def check(username: String, password: String) = username == "admin" && password == "1234"
 
   def register = Action {
-    Ok(views.html.signup(signupForm))
+    Ok(views.html.signup(signupForm)).flashing("info" -> "Register your account here!")
   }
 
   def signUp = DBAction { implicit request =>
@@ -45,12 +45,8 @@ object Auth extends Controller with MessageHolder {
     val user = userForm.bindFromRequest.get
     val resp = Try(userService.save(user))
     resp match {
-      case Success(v) =>
-        implicit val message = Some[Msg](InfoMsg("User saved successfully."))
-        Redirect(routes.Application.index)
-      case _ =>
-        implicit val message = Some[Msg](ErrorMsg("Couldn't save user."))
-        Redirect(routes.Auth.register)
+      case Success(v) => Redirect(routes.Application.index).flashing("success" -> "Account successfully registered!")
+      case _ => Redirect(routes.Auth.register).flashing("error" -> "Failed registering account!")
     }
   }
 
@@ -63,27 +59,23 @@ object Auth extends Controller with MessageHolder {
     loginForm.bindFromRequest.fold(
       formWithErrors => {
         Logger.info("Form invalid!")
-        implicit val message = Some[Msg](ErrorMsg("Couldn't save user."))
-        BadRequest(views.html.login(formWithErrors))
+        BadRequest(views.html.login(formWithErrors)).flashing("error" -> "Invalid form!")
       },
       user => {
         userService.findByEmail(user._1) match {
           case Some(_user) if user._2 == _user.password =>
             Logger.info(s"Succeeded authenticating user ${user._1}!")
-            implicit val message = Some(InfoMsg("Login successful."))
-            Redirect(routes.Application.index).withSession(Security.username -> user._1)
+            Redirect(routes.Application.index).withSession(Security.username -> user._1).flashing("success" -> "Login successful!")
           case _ =>
             Logger.info(s"Failed authenticating user ${user._1}!")
-            implicit val message = Some(ErrorMsg("Invalid credentials."))
-            Redirect(routes.Auth.login)
+            Redirect(routes.Auth.login).flashing("error" -> "Invalid credentials!")
         }
       }
     )
   }
 
   def logout = Action {
-    implicit val message = Some(InfoMsg("You are now logged out."))
-    Redirect(routes.Auth.login).withNewSession
+    Redirect(routes.Auth.login).withNewSession.flashing("success" -> "Logout successful!")
   }
 }
 
@@ -94,8 +86,7 @@ trait Secured {
   def username(request: RequestHeader) = request.session.get(Security.username)
 
   def onUnauthorized(request: RequestHeader) = {
-    implicit val message = Some(ErrorMsg("Access unauthorized."))
-    Results.Redirect(routes.Auth.login)
+    Results.Redirect(routes.Auth.login).flashing("error" -> "Access unauthorized!")
   }
 
   def withAuth(f: => String => Request[AnyContent] => Result) = {

@@ -1,4 +1,4 @@
-@(users: List[User], menuItems: List[Link])(implicit message: Option[Msg])
+@(users: List[User], menuItems: List[Link])(implicit flash: Flash)
 
 @main("index") {
     @views.html.topMenu(menuItems)

@@ -3,7 +3,7 @@ package controllers
 import models._
 import play.api.mvc._
 
-object Application extends Controller with Secured with MessageHolder {
+object Application extends Controller with Secured {
 
   def index = withUser { user => implicit req =>
     Ok(views.html.index(userService.page().items,
@@ -19,8 +19,4 @@ object Application extends Controller with Secured with MessageHolder {
   def startGame = withUser { user => implicit req =>
     Ok("Hello " + user)
   }
-}
-
-trait MessageHolder {
-  implicit def message: Option[Msg] = None
 }

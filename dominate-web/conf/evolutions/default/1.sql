@@ -11,6 +11,6 @@ alter table "PLAYERS" add constraint "user_fk" foreign key("user_id") references
 # --- !Downs
 
 alter table "PLAYERS" drop constraint "user_fk";
-drop table "USER";
 drop table "PLAYERS";
+drop table "USER";
 

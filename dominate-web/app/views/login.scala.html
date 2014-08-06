@@ -1,4 +1,4 @@
-@(form: Form[(String,String)])(implicit message: Option[Msg])
+@(form: Form[(String,String)])(implicit flash: Flash)
 
 @main("Login Page") {
     @helper.form(action = routes.Auth.authenticate) {

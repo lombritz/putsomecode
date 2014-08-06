@@ -1,4 +1,4 @@
-@(form: Form[User])(implicit message: Option[Msg])
+@(form: Form[User])(implicit flash: Flash)
 
 @main("Sign up") {
     @helper.form(action = routes.Auth.signUp) {
