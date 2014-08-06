@@ -1,7 +1,11 @@
-@(form: Form[User])
+@(form: Form[User])(implicit message: Option[Msg])
 
 @main("Sign up") {
-
-},{
-
+    @helper.form(action = routes.Auth.signUp) {
+        @helper.inputText(form("firstname"))
+        @helper.inputText(form("lastname"))
+        @helper.inputText(form("email"))
+        @helper.inputText(form("password"))
+        <input type="submit" value="Sign Up">
+    }
 }

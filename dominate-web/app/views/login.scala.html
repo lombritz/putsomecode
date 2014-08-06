@@ -1,12 +1,10 @@
-@(form: Form[(String,String)])(implicit flash: Flash)
+@(form: Form[(String,String)])(implicit message: Option[Msg])
 
 @main("Login Page") {
-    <span>
-        @flash.get("errorMsg")
-    </span>
     @helper.form(action = routes.Auth.authenticate) {
         @helper.inputText(form("email"))
         @helper.inputPassword(form("password"))
         <input type="submit" value="Login">
+        <a href="@routes.Auth.register">Sign Up</a>
     }
 }
