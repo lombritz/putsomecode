@@ -84,7 +84,7 @@ class SlickUserRepository extends UserRepository {
   }
 
   def save(user: User) = DB.withSession { implicit session =>
-    users.insert(user)
+    users += user
     user
   }
 

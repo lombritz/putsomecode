@@ -36,18 +36,21 @@ object Auth extends Controller {
 
   def check(username: String, password: String) = username == "admin" && password == "1234"
 
-  def register = Action {
+  def register = Action { implicit request =>
     Ok(views.html.signup(signupForm)).flashing("info" -> "Register your account here!")
   }
 
   def signUp = DBAction { implicit request =>
     Logger.info("Sign Up in progress...")
-    val user = userForm.bindFromRequest.get
-    val resp = Try(userService.save(user))
-    resp match {
-      case Success(v) => Redirect(routes.Application.index).flashing("success" -> "Account successfully registered!")
-      case _ => Redirect(routes.Auth.register).flashing("error" -> "Failed registering account!")
-    }
+    userForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.signup(formWithErrors)),
+      userData =>
+        Try(userService.save(userData)) match {
+          case userTry if userTry.isSuccess =>
+            Redirect(routes.Auth.login).flashing("success" -> s"${userTry.get.email} successfully registered!")
+          case _ => Redirect(routes.Auth.register).flashing("danger" -> "Failed registering account!")
+        }
+    )
   }
 
   def login = Action { implicit request =>
@@ -59,7 +62,7 @@ object Auth extends Controller {
     loginForm.bindFromRequest.fold(
       formWithErrors => {
         Logger.info("Form invalid!")
-        BadRequest(views.html.login(formWithErrors)).flashing("error" -> "Invalid form!")
+        BadRequest(views.html.login(formWithErrors)).flashing("danger" -> "Invalid form!")
       },
       user => {
         userService.findByEmail(user._1) match {
@@ -68,7 +71,7 @@ object Auth extends Controller {
             Redirect(routes.Application.index).withSession(Security.username -> user._1).flashing("success" -> "Login successful!")
           case _ =>
             Logger.info(s"Failed authenticating user ${user._1}!")
-            Redirect(routes.Auth.login).flashing("error" -> "Invalid credentials!")
+            Redirect(routes.Auth.login).flashing("danger" -> "Invalid credentials!")
         }
       }
     )
@@ -86,7 +89,7 @@ trait Secured {
   def username(request: RequestHeader) = request.session.get(Security.username)
 
   def onUnauthorized(request: RequestHeader) = {
-    Results.Redirect(routes.Auth.login).flashing("error" -> "Access unauthorized!")
+    Results.Redirect(routes.Auth.login).flashing("danger" -> "Access unauthorized!")
   }
 
   def withAuth(f: => String => Request[AnyContent] => Result) = {
